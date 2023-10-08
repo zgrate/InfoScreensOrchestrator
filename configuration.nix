@@ -5,7 +5,12 @@
 { config, pkgs, ... }:
 
 let 
-     screenPythonEnv = pkgs.buildEnv {
+    HOSTNAME = "kiosk-wyse-1";
+    SCREEN_IP = "http://192.168.16.20:8000/";
+    SCREEN_PASSPHRASE = "lobby123";
+    ZERO_TIER_NETWORK = "e5cd7a9e1c094dca";
+
+    screenPythonEnv = pkgs.buildEnv {
       name = "screen-python-envs";
       paths = [
         (pkgs.python311.withPackages(ps: with ps; [requests]))  # Use the Python 3.11 interpreter installed as a system package
@@ -18,14 +23,10 @@ in
       ./hardware-configuration.nix
     ];
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  networking.hostName = "kiosk-wyse-1"; # Define your hostname.
-  # Pick only one of the below networking options.
-  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  #networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  environment.sessionVariables = {
+    SCREEN_IP = SCREEN_IP;
+    SCREEN_PASSPHRASE = SCREEN_PASSPHRASE;
+  };
 
 
   networking.wireless.networks =
@@ -40,6 +41,38 @@ in
       psk = "0123456789";
     };
   };
+
+#  services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk http://screen.futerkon.pl/";
+
+  services.cage.program = "${screenPythonEnv}/bin/python /usr/script.py";
+
+
+   users.users.kiosk = {
+    isNormalUser = true;
+    description = "Kioks user";
+    extraGroups = [ "wheel" ];
+    hashedPassword = "$6$fDenph8Oybmp0rNk$fD1F4K6fmmEKEfIxdkS5896HewGUjYeBxdYfJjbnv7Pf0Huat10y2sE8LU3bD5a/06euYjWaZWaKRK3bTriI01";
+    uid = 1000;
+  };
+
+
+  boot.plymouth.enable = true;
+  boot.plymouth.logo = pkgs.fetchurl {
+          url = "https://storage.zgrate.ovh/znerd-small.png";
+          sha256 = "e8a692068c9ce6ccfe40186ca0e0096d966205b70f413c309ff8051e98e2592e";
+        };
+
+
+    # Use the systemd-boot EFI boot loader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  networking.hostName = HOSTNAME; # Define your hostname.
+  # Pick only one of the below networking options.
+  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  #networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+
+
 
   # Set your time zone.
   time.timeZone = "Europe/Warsaw";
@@ -60,15 +93,7 @@ in
   # services.xserver.enable = true;
 
 
-  environment.variables = rec {
-	KIOSK_DEVICE_NAME = "KIOSK-1";
-	KIOSK_SCRIPT_IP = "https://script.info.zgrate.ovh/";
-
-        KIOSK_START_PAGE = "http://screen.futerkon.pl/?time=1692376200";
-  };
-
   nixpkgs.config.allowUnfree = true;
-
 
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
@@ -85,14 +110,10 @@ in
   };
 
   services.zerotierone.enable = true;
-  services.zerotierone.joinNetworks = ["e5cd7a9e1c094dca"];
+  services.zerotierone.joinNetworks = [ZERO_TIER_NETWORK];
 
 
   services.cage.enable = true;
-#  services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk http://screen.futerkon.pl/";
-
-  services.cage.program = "${screenPythonEnv}/bin/python /usr/script.py";
-
   services.cage.user = "kiosk";
 
   # Configure keymap in X11
@@ -111,17 +132,8 @@ in
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.kiosk = {
-    isNormalUser = true;
-    description = "Kioks user";
-    extraGroups = [ "wheel" ];
-    hashedPassword = "$6$fDenph8Oybmp0rNk$fD1F4K6fmmEKEfIxdkS5896HewGUjYeBxdYfJjbnv7Pf0Huat10y2sE8LU3bD5a/06euYjWaZWaKRK3bTriI01";
-    uid = 1000;
-  };
 
-
-  security.polkit.extraConfig = ''
+  security.polkit.extraConfig = '' 
     polkit.addRule(function(action, subject) {
       if (subject.isInGroup("wheel")) {
         return polkit.Result.YES;
@@ -144,15 +156,10 @@ in
     mpv
     firefox
     socat
-    (python311.withPackages(ps: with ps; [requests]))
+    python311
     git
   ];
   
-  boot.plymouth.enable = true;
-  boot.plymouth.logo = pkgs.fetchurl {
-          url = "https://storage.zgrate.ovh/znerd-small.png";
-          sha256 = "e8a692068c9ce6ccfe40186ca0e0096d966205b70f413c309ff8051e98e2592e";
-        };
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
