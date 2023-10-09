@@ -63,6 +63,18 @@ in
         };
 
 
+  environment.systemPackages = with pkgs; [
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    wget
+    mpv
+    firefox
+    socat
+    python311
+    git
+    htop
+  ];
+
+
     # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -149,16 +161,6 @@ in
   
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-
-  environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    wget
-    mpv
-    firefox
-    socat
-    python311
-    git
-  ];
   
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
