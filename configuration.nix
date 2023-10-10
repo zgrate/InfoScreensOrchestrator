@@ -5,10 +5,17 @@
 { config, pkgs, ... }:
 
 let 
-    HOSTNAME = "kiosk-wyse-1";
-    SCREEN_IP = "http://192.168.16.20:8000/";
-    SCREEN_PASSPHRASE = "lobby123";
-    ZERO_TIER_NETWORK = "e5cd7a9e1c094dca";
+    HOSTNAME = "";
+    SCREEN_IP = "";
+    SCREEN_PASSPHRASE = "";
+    ZERO_TIER_NETWORK = "";
+    KIOSK_HASHED_PASSWORD = "";
+
+    NETWORK_CONFIGURATION = {
+        "Hausmeerschweichen" = {
+           psk = "1234567890abcde";
+        };
+    };
 
     screenPythonEnv = pkgs.buildEnv {
       name = "screen-python-envs";
@@ -29,18 +36,7 @@ in
   };
 
 
-  networking.wireless.networks =
-  {
-    "Hausmeerschweichen" = {
-       psk = "1234567890abcde";
-    };
-
-    "Hotel Ameliowka" = {};
-    
-    "Kawiarnia Ameliowka" = {
-      psk = "0123456789";
-    };
-  };
+  networking.wireless.networks = NETWORK_CONFIGURATION;
 
 #  services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk http://screen.futerkon.pl/";
 
@@ -51,7 +47,7 @@ in
     isNormalUser = true;
     description = "Kioks user";
     extraGroups = [ "wheel" ];
-    hashedPassword = "$6$fDenph8Oybmp0rNk$fD1F4K6fmmEKEfIxdkS5896HewGUjYeBxdYfJjbnv7Pf0Huat10y2sE8LU3bD5a/06euYjWaZWaKRK3bTriI01";
+    hashedPassword = KIOSK_HASHED_PASSWORD;
     uid = 1000;
   };
 
@@ -85,21 +81,9 @@ in
   #networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
 
-
   # Set your time zone.
   time.timeZone = "Europe/Warsaw";
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkbOptions in tty.
-  # };
 
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
@@ -128,22 +112,11 @@ in
   services.cage.enable = true;
   services.cage.user = "kiosk";
 
-  # Configure keymap in X11
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e,caps:escape";
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
   nixpkgs.config.pulseaudio = true;
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
 
   security.polkit.extraConfig = '' 
     polkit.addRule(function(action, subject) {
@@ -158,19 +131,6 @@ in
     wheelNeedsPassword = false;
   };
 
-  
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
