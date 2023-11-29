@@ -1,3 +1,5 @@
+import random
+
 from django.db.models import F, ExpressionWrapper, DurationField, Count
 from django.utils import timezone
 from workers import task
@@ -6,19 +8,30 @@ from screen.models import AutomaticScreenSwitcher
 
 @task(schedule=10)
 def screen_automatic_runner():
-    qs = AutomaticScreenSwitcher.objects.annotate(next_execution=(F('last_switch') + ExpressionWrapper(F('change_time_seconds')*1000000, output_field=DurationField()))).filter(next_execution__lte=timezone.now(), switching_screens_group__isnull=False).annotate(count_systems=Count('automatic_commands')).prefetch_related('automatic_commands')
+    print("Screen runner")
+    qs = AutomaticScreenSwitcher.objects.annotate(next_execution=(
+                F('last_switch') + ExpressionWrapper(F('change_time_seconds') * 1000000,
+                                                     output_field=DurationField()))).filter(
+        next_execution__lte=timezone.now(), switching_screens_group__isnull=False).annotate(
+        count_systems=Count('automatic_commands')).prefetch_related('automatic_commands')
     ele: AutomaticScreenSwitcher
     for (ele) in qs.iterator():
-        if ele.current_command:
-            curr = ele.current_command.number_order + 1
-            if curr >= ele.count_systems:
-                curr = 0
+        print("Switching screen", ele.profile_name)
+        if ele.randomise:
+            if ele.current_command:
+                ele.current_command = random.choice(list(ele.automatic_commands.exclude(pk=ele.current_command)))
+            else:
+                ele.current_command = random.choice(list(ele.automatic_commands))
 
-            ele.current_command = ele.automatic_commands.get(number_order=curr)
+        if ele.current_command:
+            next_obj = ele.automatic_commands.filter(created__gt=ele.current_command.created).order_by('created').first()
+
+            if next_obj is None:
+                ele.current_command = ele.automatic_commands.order_by('created').first()
+            else:
+                ele.current_command = next_obj
         else:
-            ele.current_command = ele.automatic_commands.get(number_order=0)
+            ele.current_command = ele.automatic_commands.order_by('created').first()
 
         ele.last_switch = timezone.now()
         ele.save(update_fields=['current_command', 'last_switch'])
-
-
