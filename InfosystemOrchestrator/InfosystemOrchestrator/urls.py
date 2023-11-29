@@ -19,7 +19,10 @@ from django.urls import path
 
 import screen.views
 
+from healthcheck.views import BeatAPI
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('screen/<str:passphrase>/', screen.views.screen_view)
+    path('screen/<str:passphrase>/', screen.views.screen_view),
+    path('beat/', BeatAPI.as_view())
 ]
