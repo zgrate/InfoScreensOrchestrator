@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.db import models
 from django.db.models import RESTRICT
 from django.utils import timezone
@@ -103,6 +106,14 @@ class Screen(models.Model):
             return cmd
         print("DEFAULT")
         return ScreenCommand.get_default_screen_command()
+
+    def save(
+        self, *args, **kwargs
+    ):
+        if self.passphrase is None or self.passphrase == '':
+            self.passphrase = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"{self.pk} - {self.name}"
