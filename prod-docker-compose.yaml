@@ -45,6 +45,20 @@ services:
     depends_on:
       - db
 
+  screen-system-manage:
+    container_name: screen-system-manage
+    build:
+      context: .
+      dockerfile: ./Dockerfile-Manage
+    environment:
+      DB_HOST: screen-system-db
+      DB_PORT: 5432
+    depends_on:
+      - db
+      - adminer
+    volumes:
+      - .:/app
+
 volumes:
   db:
     driver: local
