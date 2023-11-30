@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  screen-system:
+    container_name: screen-system
+    build: .
+    restart: unless-stopped
+    environment:
+      DB_HOST: screen-system-db
+      DB_PORT: 5432
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    ports:
+      - "5660:8000"
+
+  db:
+    container_name: screen-system-db
+    image: postgres:14.2
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: screensystem
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5661:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  adminer:
+    container_name: screen-system-adminer
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - "5662:8080"
+
+  screen-system-worker:
+    container_name: screen-system-workers
+    build: .
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    entrypoint: 'python manage.py runworkers'
+    depends_on:
+      - db
+
+volumes:
+  db:
+    driver: local

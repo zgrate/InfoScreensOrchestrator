@@ -12,9 +12,14 @@ class ScreenCommand(models.Model):
     base_command = models.CharField(max_length=255)
     args = models.TextField(null=True, blank=True)
 
+    permit_background_audio = models.BooleanField(default=False)
+
     @classmethod
     def get_default_screen_command(cls):
-        return ScreenCommand.objects.get_or_create(command_name='default', defaults={'base_command': 'firefox', 'args': '-kiosk https://zgrate.com/'})[0]
+        return ScreenCommand.objects.get_or_create(command_name='default', defaults={'base_command': 'firefox',
+                                                                                     'args': '-kiosk https://zgrate.com/',
+                                                                                     'permit_background_audio': True})[
+            0]
 
     def __str__(self):
         return f"{self.pk} - {self.command_name}"
@@ -46,12 +51,12 @@ class AutomaticCommand(models.Model):
         ordering = ['created']
 
 
-
 class ScreenGroup(models.Model):
     name = models.CharField(max_length=255)
     assigned_command = models.ForeignKey(ScreenCommand, null=True, blank=True, on_delete=RESTRICT)
 
-    switching_mode = models.ForeignKey(AutomaticScreenSwitcher, null=True, blank=True, on_delete=RESTRICT, related_name='switching_screens_group')
+    switching_mode = models.ForeignKey(AutomaticScreenSwitcher, null=True, blank=True, on_delete=RESTRICT,
+                                       related_name='switching_screens_group')
 
     disabled = models.BooleanField(default=False)
 
@@ -77,6 +82,15 @@ class Screen(models.Model):
     force_override = models.BooleanField(default=False)
     overriden_current_command = models.ForeignKey(ScreenCommand, null=True, blank=True, on_delete=RESTRICT)
 
+    background_audio_url = models.CharField(max_length=1024, null=True, blank=True)
+
+    @property
+    def background_audio_stream(self):
+        if (cmd := self.command) and self.background_audio_url and cmd.permit_background_audio:
+            return self.background_audio_url
+
+        return None
+
     @property
     def command(self):
         if self.force_override and (cmd := self.overriden_current_command):
@@ -85,7 +99,7 @@ class Screen(models.Model):
         if self.screen_group and self.screen_group.disabled and (cmd := self.overriden_current_command):
             return cmd
 
-        elif self.screen_group and (cmd :=self.screen_group.command):
+        elif self.screen_group and (cmd := self.screen_group.command):
             return cmd
         print("DEFAULT")
         return ScreenCommand.get_default_screen_command()
