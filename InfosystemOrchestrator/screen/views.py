@@ -19,3 +19,8 @@ def screen_view(request, passphrase=None):
         return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': "Invalid screen passphrase"})
 
 
+@api_view(['POST'])
+def generate_screen(request, name=None):
+    screen = Screen(name=name)
+    screen.save()
+    return Response(data={"name": name, "passphrase": screen.passphrase})
