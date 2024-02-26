@@ -23,6 +23,7 @@ import screen.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('screen/<str:passphrase>/', screen.views.screen_view)
+    path('screen/<str:passphrase>/', screen.views.screen_view),
+    path('generate/<str:name>/', screen.views.generate_screen),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

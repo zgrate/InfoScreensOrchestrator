@@ -4,10 +4,10 @@ from django.contrib.admin.options import InlineModelAdmin
 
 from screen.models import Screen, ScreenGroup, ScreenCommand, AutomaticScreenSwitcher, AutomaticCommand
 
-
 # Register your models here.
 # admin.site.register(ScreenCommand)
 admin.site.register(AutomaticCommand)
+
 
 class AutomaticCommandAdmin(TabularInline):
     model = AutomaticCommand
