@@ -21,5 +21,6 @@ def screen_view(request, passphrase=None):
 
 @api_view(['POST'])
 def generate_screen(request, name=None):
-    screen = Screen.objects.get_or_create(name=name)[0]
+    screen = Screen(name=name)
+    screen.save()
     return Response(data={"name": name, "passphrase": screen.passphrase})
