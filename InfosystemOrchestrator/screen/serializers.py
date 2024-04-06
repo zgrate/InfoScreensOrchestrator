@@ -23,3 +23,9 @@ class ScreenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screen
         fields = ['name', 'screen_group', 'command', 'background_audio_stream']
+
+
+class ScreenHeartbeatSerializer(serializers.Serializer):
+    ip_addresses = serializers.ListField(allow_null=True)
+    zerotier_status = serializers.JSONField(allow_null=True)
+    timestamp = serializers.DateTimeField()

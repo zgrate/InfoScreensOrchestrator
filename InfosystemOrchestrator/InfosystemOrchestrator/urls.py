@@ -7,7 +7,7 @@ Examples:
 Function views
     1. Add an import:  from my_app import views
     2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
+Class-based viewsviews
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 Including another URLconf
@@ -19,11 +19,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
+import printingserver.views
 import screen.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('screen/<str:passphrase>/', screen.views.screen_view),
     path('generate/<str:name>/', screen.views.generate_screen),
+    path('upload_form/', printingserver.views.upload_form, name='upload_form'),
+    path('notification_receiver/', printingserver.views.notification_receiver),
+    path('test_call/', printingserver.views.test_call, name='test_call')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

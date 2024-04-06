@@ -1,10 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from screen.models import Screen
-from screen.serializers import ScreenSerializer
+from screen.serializers import ScreenSerializer, ScreenHeartbeatSerializer
 
 
 # Create your views here.
@@ -24,3 +24,10 @@ def generate_screen(request, name=None):
     screen = Screen(name=name)
     screen.save()
     return Response(data={"name": name, "passphrase": screen.passphrase})
+
+
+@api_view(['POST'])
+def heartbeat(request):
+    serializer = ScreenHeartbeatSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+

@@ -117,3 +117,15 @@ class Screen(models.Model):
 
     def __str__(self):
         return f"{self.pk} - {self.name}"
+
+
+class ScreenHeartbeat(models.Model):
+    screen = models.ForeignKey(Screen, on_delete=models.CASCADE)
+
+    timestamp = models.DateTimeField(auto_now_add=True)
+    remote_timestamp = models.DateTimeField()
+
+    ip_addresses = models.JSONField(null=True, blank=True)
+    zerotier_status = models.JSONField(null=True, blank=True)
+
+    

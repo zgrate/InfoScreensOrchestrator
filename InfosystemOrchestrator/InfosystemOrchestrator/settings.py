@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'workers',
     'screen',
+    'printingserver',
+    'helpermonitor'
 ]
 
 MIDDLEWARE = [
@@ -73,22 +76,36 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'InfosystemOrchestrator.wsgi.application'
+ASGI_APPLICATION = "InfosystemOrchestrator.asgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'screensystem',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'postgres',
+    #     'HOST': os.environ.get('DB_HOST','localhost'),
+    #     'PORT': os.environ.get('DB_PORT', 5661),
+    #
+    # }
     'default': {
-
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'screensystem',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': os.environ.get('DB_HOST','localhost'),
-        'PORT': os.environ.get('DB_PORT', 5661),
-
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": 'screensystem'
     }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
 }
 
 
@@ -125,11 +142,21 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+STATICFILES_DIRS = [
+    './uploads'
+]
+
 
 STATIC_URL = 'static/'
 STATIC_ROOT = 'static/'
+
+MEDIA_ROOT = 'uploads/'
+MEDIA_URL = 'uploads/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+PRINTING_SERVICE_GROUP = "printing_service"
