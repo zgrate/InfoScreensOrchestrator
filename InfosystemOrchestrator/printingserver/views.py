@@ -22,6 +22,8 @@ def upload_form(request):
             })
     elif request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
+        form.instance.user_id = request.user.id
+
         if not form.is_valid():
             return render(request, "upload_form.html", context={"error_message": form.errors})
         else:

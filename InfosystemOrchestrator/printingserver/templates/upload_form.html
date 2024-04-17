@@ -1,16 +1,42 @@
 <html>
 <body>
+<!--{{user}} będzie podmieniony na nickname usera-->
 <p>Welcome {{user}}</p>
+<!--ACTION zostawić taki jak tutaj, to będzie automatycznie resolwowane do odpowiedniego stringa-->
 <form enctype="multipart/form-data" action="{% url 'upload_form' %}" method="post">
+<!--    To gdziekolwiek żeby było -->
 {% csrf_token %}
     <fieldset>
-<!--    <legend><h1>Upload new file for printing</h1></legend>-->
+<!--        Tutaj jest sekcja błąd i error - automatycznie będzie to ogarnięte przez django template language. Podmień styl traktując te successmessage i error message jako string -->
         {% if success_message %}<p><strong>{{ success_message }}</strong></p>{% endif %}
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-        {{ form }}
-<!--    <input type="file" name="upload_file" id="upload_file">-->
-<!--    <label for="upload_file">File to upload</label>-->
+<!--        To usunąć i tutaj zrobić Formularz-->
+
+
+         <label for="id_description">Document description:</label>
+         <input type="text" name="description" maxlength="100" required="" id="id_description" value="">
+
+         <label for="id_file_to_print">File to upload. Please do PDF:</label>
+         <input type="file" name="file_to_print" required="" id="id_file_to_print" value="">
+
+         <label for="id_number_of_pages">Number of pages:</label>
+         <input type="number" name="number_of_pages" required="" id="id_number_of_pages" value="">
+
+         <label for="id_priority">Priority:</label>
+         <select name="priority" required="" id="id_priority">
+
+             <option value="" selected="">---------</option>
+             <option value="1">No Rush</option>
+             <option value="2">Need this tomorrow</option>
+             <option value="3">Need this in a few hours</option>
+             <option value="4">Need this in hour</option>
+             <option value="5">ASAP</option>
+        </select>
+
+ <label for="id_delivery_location">Delivery location:</label>
+ <input type="text" name="delivery_location" maxlength="255" required="" id="id_delivery_location" value="">
+
 </fieldset>
 <input type="submit" value="Submit">
 </form>
