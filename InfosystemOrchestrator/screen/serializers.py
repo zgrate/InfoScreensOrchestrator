@@ -10,16 +10,19 @@ class ScreenCommandSerializer(serializers.ModelSerializer):
 
 
 class ScreenGroupSerializer(serializers.ModelSerializer):
+    assigned_command = ScreenCommandSerializer(read_only=True, allow_null=True)
+    
     class Meta:
         model = ScreenGroup
-        fields = ['name']
+        fields = ['name', 'assigned_command']
 
 
 class ScreenSerializer(serializers.ModelSerializer):
     command = ScreenCommandSerializer(read_only=True, allow_null=True)
     screen_group = ScreenGroupSerializer(read_only=True, allow_null=True)
     background_audio_stream = serializers.CharField(allow_null=True)
+    force_override = serializers.BooleanField()
 
     class Meta:
         model = Screen
-        fields = ['name', 'screen_group', 'command', 'background_audio_stream']
+        fields = ['name', 'screen_group', 'command', 'background_audio_stream', 'force_override']

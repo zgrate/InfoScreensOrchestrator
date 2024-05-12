@@ -5,7 +5,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 
 from screen.models import Screen, AccessToken, ScreenGroup, ScreenCommand
-from screen.serializers import ScreenSerializer
+from screen.serializers import ScreenSerializer, ScreenGroupSerializer
 
 
 # Create your views here.
@@ -25,6 +25,7 @@ def generate_screen(request, name=None):
     screen = Screen(name=name)
     screen.save()
     return Response(data={"name": name, "passphrase": screen.passphrase})
+
 
 @api_view(['GET'])
 def switch_command_group(request, access_token, group, new_command):
@@ -70,3 +71,24 @@ def switch_screen_override(request, access_token, screen_id):
     screen.save()
     return Response(data={"status": "ok", "override_State": screen.force_override, "screen": screen.name})
 
+
+@api_view(['GET'])
+def screen_info(request, access_token, screen_id):
+    if not AccessToken.objects.filter(token=access_token).exists():
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    if not (screen := Screen.objects.filter(id=screen_id).first()):
+        return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "Invalid Screen"})
+
+    return Response(data={"status": "ok", "screen": ScreenSerializer(instance=screen).data})
+
+
+@api_view(['GET'])
+def screen_group_info(request, access_token, screen_group_id):
+    if not AccessToken.objects.filter(token=access_token).exists():
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    if not (screen := ScreenGroup.objects.filter(id=screen_group_id).first()):
+        return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "Invalid ScreenGroup"})
+
+    return Response(data={"status": "ok", "screen_group": ScreenGroupSerializer(instance=screen).data})
