@@ -25,5 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('screen/<str:passphrase>/', screen.views.screen_view),
     path('generate/<str:name>/', screen.views.generate_screen),
+    path('switch_group/<str:access_token>/<int:group>/<int:new_command>', screen.views.switch_command_group),
+    path('switch_screen/<str:access_token>/<int:screen_id>/<int:new_command>', screen.views.switch_command_screen),
+    path('switch_screen/<str:access_token>/<int:screen_id>/', screen.views.switch_screen_override),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

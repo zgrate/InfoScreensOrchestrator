@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import TabularInline
 from django.contrib.admin.options import InlineModelAdmin
 
-from screen.models import Screen, ScreenGroup, ScreenCommand, AutomaticScreenSwitcher, AutomaticCommand
+from screen.models import Screen, ScreenGroup, ScreenCommand, AutomaticScreenSwitcher, AutomaticCommand, AccessToken
 
 # Register your models here.
 # admin.site.register(ScreenCommand)
@@ -44,3 +44,6 @@ class ScreenGroupAdmin(admin.ModelAdmin):
     list_display = ('name', 'assigned_command', 'switching_mode', 'disabled')
     search_fields = ('name',)
     autocomplete_fields = ('assigned_command', 'switching_mode')
+
+
+admin.site.register(AccessToken)

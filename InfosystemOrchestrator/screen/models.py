@@ -1,6 +1,9 @@
 import random
 import string
 
+import django.conf.global_settings
+from django.conf import settings
+from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from django.db.models import RESTRICT
 from django.utils import timezone
@@ -90,7 +93,7 @@ class Screen(models.Model):
     @property
     def background_audio_stream(self):
         if (cmd := self.command) and self.background_audio_url and cmd.permit_background_audio:
-            return self.background_audio_url
+            return self.backgroungroupd_audio_url
 
         return None
 
@@ -108,12 +111,23 @@ class Screen(models.Model):
         return ScreenCommand.get_default_screen_command()
 
     def save(
-        self, *args, **kwargs
+            self, *args, **kwargs
     ):
         if self.passphrase is None or self.passphrase == '':
             self.passphrase = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
         super().save(*args, **kwargs)
 
-
     def __str__(self):
         return f"{self.pk} - {self.name}"
+
+
+class AccessToken(models.Model):
+    token = models.CharField(max_length=255)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def save(
+            self, *args, **kwargs
+    ):
+        if self.token is None or self.token == '':
+            self.passphrase = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        super().save(*args, **kwargs)
