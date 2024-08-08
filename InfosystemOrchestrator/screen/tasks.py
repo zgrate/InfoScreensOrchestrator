@@ -26,7 +26,7 @@ def screen_automatic_runner():
 
         print("Switching screen", ele.profile_name)
 
-        if next_execution_time > timezone.now() and ele.switching_screens_group is not None:
+        if next_execution_time <= timezone.now() and ele.switching_screens_group is not None:
             if ele.randomise:
                 if ele.current_command:
                     ele.current_command = random.choice(list(ele.automatic_commands.exclude(pk=ele.current_command)))
