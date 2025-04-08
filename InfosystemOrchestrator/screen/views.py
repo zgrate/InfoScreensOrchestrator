@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from screen.models import Screen, AccessToken, ScreenGroup, ScreenCommand
 from screen.serializers import ScreenSerializer, ScreenGroupSerializer
+from django.http import HttpResponse
 
 import datetime
 
@@ -109,7 +110,7 @@ def metrics(request):
         f'screens_available {len(screens)}',
         f'groups_available {len(groups)}',
     ]
-    return Response(data="\n".join(response), content_type="text/plain")
+    return HttpResponse(data="\n".join(response), content_type="text/plain")
     
 # api_http_requests_total{method="POST", handler="/messages"}
 
