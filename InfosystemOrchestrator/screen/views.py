@@ -110,7 +110,7 @@ def metrics(request):
         f'screens_available {len(screens)}',
         f'groups_available {len(groups)}',
     ]
-    return HttpResponse(data="\n".join(response), content_type="text/plain")
+    return HttpResponse("\n".join(response), content_type="text/plain")
     
 # api_http_requests_total{method="POST", handler="/messages"}
 
