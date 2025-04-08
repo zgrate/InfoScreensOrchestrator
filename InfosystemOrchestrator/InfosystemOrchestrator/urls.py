@@ -30,5 +30,6 @@ urlpatterns = [
     path('switch_screen_override/<str:access_token>/<int:screen_id>/', screen.views.switch_screen_override),
     path('screen_info/<str:access_token>/<int:screen_id>/', screen.views.screen_info),
     path('screen_group_info/<str:access_token>/<int:screen_group_id>/', screen.views.screen_group_info),
+    path('metrics/', screen.views.metrics)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
