@@ -111,7 +111,7 @@ def metrics(request):
         f'groups_available {len(groups)}',
         *[f'screens_screen_command{{name="{screen.name}", id="{screen.id}", command="{screen.command.command_name.replace(" ", "_")}"}} 1' for screen in screens],
         *[f'screens_screen_group{{name="{screen.name}", id="{screen.id}", group="{screen.screen_group.name.replace(" ", "_")}"}} 1' for screen in screens],
-        *[f'screens_screen_group_command{{name="{group.name}", id="{group.id}", command="{group.command.name.replace(" ", "_")}"}} 1' for group in groups]
+        *[f'screens_screen_group_command{{name="{group.name}", id="{group.id}", command="{group.command.command_name.replace(" ", "_")}"}} 1' for group in groups]
     ]
     return HttpResponse("\n".join(response), content_type="text/plain")
     
