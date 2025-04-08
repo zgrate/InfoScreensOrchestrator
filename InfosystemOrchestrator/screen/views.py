@@ -109,11 +109,14 @@ def metrics(request):
         *[f'screens_request_last10s{{name="{screen.name.replace(" ", "_")}", id="{screen.id}"}} {int(now - last_requests.get(screen.id, datetime.datetime.fromtimestamp(0)) <= datetime.timedelta(seconds=10))}' for screen in screens],
         f'screens_available {len(screens)}',
         f'groups_available {len(groups)}',
+        *[f'screens_screen_command{{name="{screen.name}", id="{screen.id}", command="{screen.command.command_name.replace(" ", "_")}"}} 1' for screen in screens],
+        *[f'screens_screen_group{{name="{screen.name}", id="{screen.id}", group="{screen.screen_group.name.replace(" ", "_")}"}} 1' for screen in screens],
+        *[f'screens_screen_group_command{{name="{group.name}", id="{group.id}", command="{group.command.name.replace(" ", "_")}"}} 1' for group in groups]
     ]
     return HttpResponse("\n".join(response), content_type="text/plain")
     
 # api_http_requests_total{method="POST", handler="/messages"}
 
-        # *[f'screens_screen_command{{name="{screen.name}", id="{screen.id}"}} "{screen.command}"' for screen in screens],
+        # 
         # *[f'screens_screen_group{{name="{screen.name}", id="{screen.id}"}} "{screen.screen_group.name}"' for screen in screens],
-        # *[f'screens_screen_group_command{{name="{group.name}", id="{group.id}"}} "{group.command}"' for group in groups],
+        # ,
